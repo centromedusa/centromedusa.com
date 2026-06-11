@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendar sesión · Centro Medusa</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232D4A3E'/%3E%3Cpath d='M16 6 C16 6, 10 8, 10 13 C10 16, 13 17, 13 20 C13 23, 11 24, 11 24' stroke='%23CFE5D5' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3Cpath d='M16 6 C16 6, 22 8, 22 13 C22 16, 19 17, 19 20 C19 23, 21 24, 21 24' stroke='%23CFE5D5' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='14' cy='11' r='1' fill='%23CFE5D5'/%3E%3Ccircle cx='18' cy='11' r='1' fill='%23CFE5D5'/%3E%3Cpath d='M14 14 Q16 15.5 18 14' stroke='%23CFE5D5' stroke-width='1.3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fondo: #F7F4EF;
+      --musgo: #2D4A3E;
+      --sage: #81AE94;
+      --menta: #CFE5D5;
+      --teal: #6EA89E;
+      --texto: #2C2C2C;
+      --texto-suave: #6B6B6B;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--fondo);
+      color: var(--texto);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--fondo);
+      border-bottom: 1px solid rgba(129,174,148,0.25);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--texto);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.88rem;
+      font-weight: 400;
+      color: var(--texto-suave);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--musgo); font-weight: 500; }
+
+    .nav-cta {
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: var(--musgo);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #1e3329; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--texto);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0; right: 0;
+      background: var(--fondo);
+      border-bottom: 1px solid rgba(129,174,148,0.25);
+      padding: 1.5rem 5%;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 1rem;
+      color: var(--texto-suave);
+      text-decoration: none;
+      font-weight: 400;
+    }
+    .mobile-menu a:hover { color: var(--musgo); }
+
+    /* ── HEADER AGENDA ── */
+    .agenda-header {
+      padding: 4.5rem 8% 3.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .agenda-header .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 1rem;
+    }
+
+    .agenda-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--texto);
+      line-height: 1.15;
+      margin-bottom: 0.9rem;
+    }
+
+    .agenda-header h1 em { font-style: italic; color: var(--musgo); }
+
+    .agenda-header p {
+      font-size: 1rem;
+      color: var(--texto-suave);
+      max-width: 520px;
+      line-height: 1.8;
+    }
+
+    /* ── PASOS ── */
+    .pasos-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 8%;
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+    }
+
+    .paso {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex: 1;
+    }
+
+    .paso-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 500;
+      flex-shrink: 0;
+      transition: all 0.3s;
+      background: rgba(129,174,148,0.15);
+      color: var(--texto-suave);
+      border: 1.5px solid rgba(129,174,148,0.3);
+    }
+
+    .paso.activo .paso-num {
+      background: var(--musgo);
+      color: #fff;
+      border-color: var(--musgo);
+    }
+
+    .paso.completado .paso-num {
+      background: var(--sage);
+      color: #fff;
+      border-color: var(--sage);
+    }
+
+    .paso-label {
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+      font-weight: 400;
+      transition: color 0.3s;
+    }
+
+    .paso.activo .paso-label { color: var(--musgo); font-weight: 500; }
+    .paso.completado .paso-label { color: var(--sage); }
+
+    .paso-linea {
+      flex: none;
+      width: 2rem;
+      height: 1px;
+      background: rgba(129,174,148,0.25);
+      margin: 0 0.5rem;
+    }
+
+    /* ── LAYOUT PRINCIPAL ── */
+    .agenda-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 8% 6rem;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    /* ── SECCIONES DE SELECCIÓN ── */
+    .seleccion-bloque {
+      display: none;
+    }
+    .seleccion-bloque.visible { display: block; }
+
+    .seleccion-titulo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      color: var(--texto);
+      margin-bottom: 0.4rem;
+    }
+
+    .seleccion-subtitulo {
+      font-size: 0.9rem;
+      color: var(--texto-suave);
+      margin-bottom: 2rem;
+    }
+
+    /* ── CATEGORÍAS ── */
+    .categorias-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .categoria-card {
+      background: #fff;
+      border: 1.5px solid rgba(129,174,148,0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .categoria-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--musgo);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+      transform-origin: bottom;
+    }
+
+    .categoria-card:hover {
+      border-color: rgba(129,174,148,0.5);
+      box-shadow: 0 4px 20px rgba(45,74,62,0.07);
+      transform: translateY(-2px);
+    }
+
+    .categoria-card.seleccionada {
+      border-color: var(--musgo);
+      box-shadow: 0 6px 28px rgba(45,74,62,0.1);
+    }
+
+    .categoria-card.seleccionada::before { transform: scaleY(1); }
+
+    .categoria-icono {
+      font-size: 1.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .categoria-nombre {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--texto);
+      margin-bottom: 0.35rem;
+    }
+
+    .categoria-desc {
+      font-size: 0.82rem;
+      color: var(--texto-suave);
+      line-height: 1.55;
+    }
+
+    /* ── OPCIONES DE SESIÓN (acordeón con precio) ── */
+    .opciones-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .opcion-card {
+      background: #fff;
+      border: 1.5px solid rgba(129,174,148,0.2);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .opcion-card:hover {
+      border-color: rgba(129,174,148,0.5);
+      box-shadow: 0 3px 16px rgba(45,74,62,0.07);
+    }
+
+    .opcion-card.seleccionada {
+      border-color: var(--musgo);
+      box-shadow: 0 4px 20px rgba(45,74,62,0.1);
+    }
+
+    .opcion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.4rem;
+      gap: 1rem;
+    }
+
+    .opcion-info {
+      flex: 1;
+    }
+
+    .opcion-nombre {
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--texto);
+      margin-bottom: 0.25rem;
+    }
+
+    .opcion-meta {
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .opcion-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .opcion-precio-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(207,229,213,0.4);
+      color: var(--musgo);
+      border-radius: 50px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .opcion-precio-btn svg {
+      transition: transform 0.25s;
+    }
+
+    .opcion-card.precio-visible .opcion-precio-btn svg {
+      transform: rotate(180deg);
+    }
+
+    .opcion-precio-btn:hover { background: rgba(207,229,213,0.7); }
+
+    .opcion-precio-panel {
+      display: none;
+      padding: 0 1.4rem 1.2rem;
+    }
+
+    .opcion-card.precio-visible .opcion-precio-panel {
+      display: block;
+    }
+
+    .precio-inner {
+      background: rgba(207,229,213,0.2);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .precio-monto {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--musgo);
+    }
+
+    .precio-monto sup {
+      font-size: 0.9rem;
+      font-weight: 500;
+      vertical-align: top;
+      margin-top: 0.35rem;
+      display: inline-block;
+    }
+
+    .precio-detalle {
+      font-size: 0.78rem;
+      color: var(--texto-suave);
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .opcion-seleccionar-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: var(--musgo);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.55rem 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .opcion-seleccionar-btn:hover {
+      background: #1e3329;
+      transform: translateY(-1px);
+    }
+
+    .opcion-seleccionar-btn.elegida {
+      background: var(--sage);
+    }
+
+    /* ── BOTONES DE NAVEGACIÓN ── */
+    .nav-pasos {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .btn-siguiente {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: var(--musgo);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.75rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-siguiente:hover { background: #1e3329; transform: translateY(-1px); }
+    .btn-siguiente:disabled {
+      background: rgba(129,174,148,0.25);
+      color: var(--texto-suave);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-volver {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 400;
+      background: transparent;
+      color: var(--texto-suave);
+      border: 1.5px solid rgba(129,174,148,0.35);
+      border-radius: 50px;
+      padding: 0.75rem 1.4rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-volver:hover { border-color: var(--sage); color: var(--musgo); }
+
+    /* ── PASO 3: MÉTODO DE PAGO ── */
+    .pago-opciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .pago-card {
+      background: #fff;
+      border: 1.5px solid rgba(129,174,148,0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      text-align: center;
+    }
+
+    .pago-card:hover {
+      border-color: rgba(129,174,148,0.5);
+      box-shadow: 0 4px 20px rgba(45,74,62,0.07);
+      transform: translateY(-2px);
+    }
+
+    .pago-card.seleccionada {
+      border-color: var(--musgo);
+      box-shadow: 0 6px 28px rgba(45,74,62,0.1);
+    }
+
+    .pago-icono {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      margin: 0 auto 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pago-icono.webpay { background: #1a5276; }
+    .pago-icono.whatsapp { background: #25D366; }
+
+    .pago-nombre {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--texto);
+      margin-bottom: 0.35rem;
+    }
+
+    .pago-desc {
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+      line-height: 1.5;
+    }
+
+    .pago-accion {
+      display: none;
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: #fff;
+      border: 1.5px solid rgba(129,174,148,0.2);
+      border-radius: 14px;
+    }
+
+    .pago-accion.visible { display: block; }
+
+    .pago-accion-titulo {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--musgo);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .pago-accion p {
+      font-size: 0.88rem;
+      color: var(--texto-suave);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .btn-webpay {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #1a5276;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.6rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-webpay:hover { background: #154360; transform: translateY(-1px); }
+
+    .btn-wa-pago {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.75rem 1.6rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-wa-pago:hover { background: #1ebe5a; transform: translateY(-1px); }
+
+    /* ── RESUMEN (sidebar) ── */
+    .resumen-card {
+      background: #fff;
+      border: 1.5px solid rgba(129,174,148,0.2);
+      border-radius: 20px;
+      padding: 1.75rem;
+      position: sticky;
+      top: 90px;
+    }
+
+    .resumen-titulo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--texto);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(129,174,148,0.15);
+    }
+
+    .resumen-vacio {
+      font-size: 0.88rem;
+      color: var(--texto-suave);
+      font-style: italic;
+      line-height: 1.65;
+    }
+
+    .resumen-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .resumen-fila {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .resumen-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sage);
+      flex-shrink: 0;
+      margin-top: 0.4rem;
+    }
+
+    .resumen-fila-contenido {}
+
+    .resumen-fila-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.2rem;
+    }
+
+    .resumen-fila-valor {
+      font-size: 0.92rem;
+      color: var(--texto);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .resumen-precio-total {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(129,174,148,0.15);
+      display: none;
+    }
+
+    .resumen-precio-total.visible { display: block; }
+
+    .resumen-precio-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--texto-suave);
+      margin-bottom: 0.4rem;
+    }
+
+    .resumen-precio-monto {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--musgo);
+    }
+
+    .resumen-nota {
+      margin-top: 1.25rem;
+      font-size: 0.78rem;
+      color: var(--texto-suave);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .resumen-descuento {
+      display: none;
+      margin-top: 0.75rem;
+      background: rgba(207,229,213,0.35);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--musgo);
+      font-weight: 500;
+    }
+    .resumen-descuento.visible { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .agenda-main {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .resumen-card {
+        position: static;
+        order: -1;
+      }
+
+      .categorias-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pago-opciones {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    @media (max-width: 600px) {
+      .agenda-header, .pasos-bar, .agenda-main { padding-left: 5%; padding-right: 5%; }
+      .paso-label { display: none; }
+      .paso-linea { width: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">Centro Medusa</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="servicios.html">Servicios</a></li>
+    <li><a href="agenda.html" class="active">Agendar</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+  </ul>
+  <a href="agenda.html" class="nav-cta">Reservar sesión</a>
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Inicio</a>
+  <a href="servicios.html">Servicios</a>
+  <a href="agenda.html">Agendar</a>
+  <a href="blog.html">Blog</a>
+  <a href="contacto.html">Contacto</a>
+</div>
+
+<!-- ── HEADER ── -->
+<header class="agenda-header">
+  <p class="eyebrow">Reserva de sesión</p>
+  <h1>Elige tu sesión<br>y <em>agenda en minutos</em></h1>
+  <p>Selecciona el tipo de servicio, la opción que más se ajuste a ti, y coordina el pago por la vía que prefieras.</p>
+</header>
+
+<!-- ── BARRA DE PASOS ── -->
+<div class="pasos-bar">
+  <div class="paso activo" id="paso-1">
+    <div class="paso-num">1</div>
+    <span class="paso-label">Elige el servicio</span>
+  </div>
+  <div class="paso-linea"></div>
+  <div class="paso" id="paso-2">
+    <div class="paso-num">2</div>
+    <span class="paso-label">Elige la opción</span>
+  </div>
+  <div class="paso-linea"></div>
+  <div class="paso" id="paso-3">
+    <div class="paso-num">3</div>
+    <span class="paso-label">Método de pago</span>
+  </div>
+</div>
+
+<!-- ── CUERPO ── -->
+<main class="agenda-main">
+
+  <!-- Columna izquierda: selección -->
+  <div>
+
+    <!-- PASO 1: Categoría -->
+    <div class="seleccion-bloque visible" id="bloque-1">
+      <h2 class="seleccion-titulo">¿Qué tipo de sesión buscas?</h2>
+      <p class="seleccion-subtitulo">Puedes ver todos los detalles en la <a href="servicios.html" style="color:var(--musgo);font-weight:500;text-decoration:none;">página de servicios</a>.</p>
+
+      <div class="categorias-grid">
+
+        <div class="categoria-card" onclick="seleccionarCategoria(this, 'acompanamiento')">
+          <div class="categoria-icono">❤️</div>
+          <div class="categoria-nombre">Acompañamiento emocional</div>
+          <div class="categoria-desc">Sesiones individuales para atravesar momentos difíciles con apoyo y presencia.</div>
+        </div>
+
+        <div class="categoria-card" onclick="seleccionarCategoria(this, 'integrativa')">
+          <div class="categoria-icono">🌿</div>
+          <div class="categoria-nombre">Consulta de salud integrativa</div>
+          <div class="categoria-desc">Evaluación de tu situación desde una mirada integral: cuerpo, mente y entorno.</div>
+        </div>
+
+        <div class="categoria-card" onclick="seleccionarCategoria(this, 'holisticas')">
+          <div class="categoria-icono">🔮</div>
+          <div class="categoria-nombre">Terapias holísticas</div>
+          <div class="categoria-desc">Tarot, oráculos, astrología, limpieza energética, flores de Bach y más.</div>
+        </div>
+
+        <div class="categoria-card" onclick="seleccionarCategoria(this, 'programas')">
+          <div class="categoria-icono">🧠</div>
+          <div class="categoria-nombre">Programas y asesorías</div>
+          <div class="categoria-desc">Planes de 3, 5 o 7 sesiones para un proceso con continuidad real.</div>
+        </div>
+
+      </div>
+
+      <div class="nav-pasos">
+        <button class="btn-siguiente" id="btn-siguiente-1" disabled onclick="irAPaso(2)">
+          Continuar →
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 2: Opción específica -->
+    <div class="seleccion-bloque" id="bloque-2">
+      <h2 class="seleccion-titulo" id="paso2-titulo">Elige la opción</h2>
+      <p class="seleccion-subtitulo">Haz clic en <strong style="font-weight:500;color:var(--musgo);">Ver precio</strong> para ver el valor de cada opción.</p>
+
+      <div class="opciones-lista" id="opciones-lista">
+        <!-- Se rellena dinámicamente con JS -->
+      </div>
+
+      <div class="nav-pasos">
+        <button class="btn-volver" onclick="irAPaso(1)">← Volver</button>
+        <button class="btn-siguiente" id="btn-siguiente-2" disabled onclick="irAPaso(3)">
+          Continuar →
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Método de pago -->
+    <div class="seleccion-bloque" id="bloque-3">
+      <h2 class="seleccion-titulo">¿Cómo prefieres pagar?</h2>
+      <p class="seleccion-subtitulo">Elige la opción que más te acomode.</p>
+
+      <div class="pago-opciones">
+
+        <div class="pago-card" onclick="seleccionarPago(this, 'webpay')">
+          <div class="pago-icono webpay">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="5" width="20" height="14" rx="3" stroke="white" stroke-width="1.5"/>
+              <path d="M2 10h20" stroke="white" stroke-width="1.5"/>
+              <rect x="5" y="14" width="4" height="2" rx="0.5" fill="white"/>
+            </svg>
+          </div>
+          <div class="pago-nombre">Webpay / Tarjeta</div>
+          <div class="pago-desc">Paga ahora con tarjeta de crédito o débito de forma segura.</div>
+        </div>
+
+        <div class="pago-card" onclick="seleccionarPago(this, 'whatsapp')">
+          <div class="pago-icono whatsapp">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+              <path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/>
+            </svg>
+          </div>
+          <div class="pago-nombre">WhatsApp</div>
+          <div class="pago-desc">Coordina la sesión y el pago directamente conmigo.</div>
+        </div>
+
+      </div>
+
+      <!-- Acción según método elegido -->
+      <div class="pago-accion" id="accion-webpay">
+        <p class="pago-accion-titulo">Pago con tarjeta</p>
+        <p>Serás redirigido al portal seguro de Webpay para completar tu pago. Una vez confirmado, recibirás un mensaje para coordinar el horario de tu sesión.</p>
+        <!-- ↓ Reemplaza el href con tu link real de Webpay -->
+        <a href="TU_LINK_DE_WEBPAY_AQUI" target="_blank" class="btn-webpay" id="btn-webpay-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" stroke="white" stroke-width="1.5"/><path d="M2 10h20" stroke="white" stroke-width="1.5"/><rect x="5" y="14" width="4" height="2" rx="0.5" fill="white"/></svg>
+          Pagar con Webpay
+        </a>
+      </div>
+
+      <div class="pago-accion" id="accion-whatsapp">
+        <p class="pago-accion-titulo">Coordinar por WhatsApp</p>
+        <p>Te contactaré para confirmar el horario y los detalles del pago. Puedes transferir, usar Webpay o pagar con tarjeta al coordinar.</p>
+        <a href="#" id="btn-wa-agenda" target="_blank" class="btn-wa-pago">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/></svg>
+          Escribir por WhatsApp
+        </a>
+      </div>
+
+      <div class="nav-pasos">
+        <button class="btn-volver" onclick="irAPaso(2)">← Volver</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Columna derecha: resumen -->
+  <aside>
+    <div class="resumen-card">
+      <div class="resumen-titulo">Tu selección</div>
+
+      <div class="resumen-vacio" id="resumen-vacio">
+        Elige un servicio para ver el resumen aquí.
+      </div>
+
+      <div class="resumen-items" id="resumen-items" style="display:none;">
+
+        <div class="resumen-fila" id="resumen-categoria-fila" style="display:none;">
+          <div class="resumen-dot"></div>
+          <div class="resumen-fila-contenido">
+            <div class="resumen-fila-label">Servicio</div>
+            <div class="resumen-fila-valor" id="resumen-categoria-val">—</div>
+          </div>
+        </div>
+
+        <div class="resumen-fila" id="resumen-opcion-fila" style="display:none;">
+          <div class="resumen-dot"></div>
+          <div class="resumen-fila-contenido">
+            <div class="resumen-fila-label">Opción</div>
+            <div class="resumen-fila-valor" id="resumen-opcion-val">—</div>
+          </div>
+        </div>
+
+        <div class="resumen-fila" id="resumen-duracion-fila" style="display:none;">
+          <div class="resumen-dot"></div>
+          <div class="resumen-fila-contenido">
+            <div class="resumen-fila-label">Duración</div>
+            <div class="resumen-fila-valor" id="resumen-duracion-val">—</div>
+          </div>
+        </div>
+
+        <div class="resumen-fila" id="resumen-modalidad-fila" style="display:none;">
+          <div class="resumen-dot"></div>
+          <div class="resumen-fila-contenido">
+            <div class="resumen-fila-label">Modalidad</div>
+            <div class="resumen-fila-valor" id="resumen-modalidad-val">—</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="resumen-precio-total" id="resumen-precio-total">
+        <div class="resumen-precio-label">Total</div>
+        <div class="resumen-precio-monto" id="resumen-precio-monto">—</div>
+        <div class="resumen-descuento" id="resumen-descuento">🎉 50% descuento en tu primera sesión</div>
+      </div>
+
+      <p class="resumen-nota">100% online · Todo medio de pago · Chile y Latinoamérica</p>
+    </div>
+  </aside>
+
+</main>
+
+<script>
+  // ── DATOS DE SERVICIOS ──
+  const servicios = {
+    acompanamiento: {
+      nombre: 'Acompañamiento emocional',
+      paso2Titulo: 'Elige el tipo de sesión',
+      opciones: [
+        {
+          id: 'ac-individual',
+          nombre: 'Sesión individual',
+          meta: ['60 min', 'Online · Videollamada'],
+          precio: '$25.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: '60 minutos',
+        },
+        {
+          id: 'ac-seguimiento',
+          nombre: 'Sesión individual / seguimiento',
+          meta: ['40 min', 'Online · Videollamada'],
+          precio: '$20.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: '40 minutos',
+        },
+        {
+          id: 'ac-urgencia',
+          nombre: 'Contención en crisis',
+          meta: ['30 min', 'Online · Videollamada'],
+          precio: '$15.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: '30 minutos',
+        },
+      ]
+    },
+    integrativa: {
+      nombre: 'Consulta de salud integrativa',
+      paso2Titulo: 'Elige el tipo de consulta',
+      opciones: [
+        {
+          id: 'int-primera',
+          nombre: 'Primera consulta',
+          meta: ['75 min', 'Online · Videollamada'],
+          precio: '$35.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: '75 minutos',
+        },
+        {
+          id: 'int-seguimiento',
+          nombre: 'Consulta de seguimiento',
+          meta: ['60 min', 'Online · Videollamada'],
+          precio: '$25.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: '60 minutos',
+        },
+      ]
+    },
+    holisticas: {
+      nombre: 'Terapias holísticas',
+      paso2Titulo: 'Elige la terapia',
+      opciones: [
+        {
+          id: 'hol-tarot',
+          nombre: 'Tarot evolutivo & terapéutico',
+          meta: ['Sesión individual', 'Online · Videollamada'],
+          precio: '$30.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-oraculos',
+          nombre: 'Oráculos',
+          meta: ['Sesión individual', 'Online · Videollamada'],
+          precio: '$28.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-carta-natal',
+          nombre: 'Carta natal astrológica',
+          meta: ['Análisis completo', 'Online · Videollamada'],
+          precio: '$45.000',
+          precioDetalle: 'análisis completo',
+          modalidad: 'Videollamada online',
+          duracion: 'Análisis completo',
+        },
+        {
+          id: 'hol-rev-solar',
+          nombre: 'Revolución solar',
+          meta: ['Año personal', 'Online · Videollamada'],
+          precio: '$40.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-sinastr',
+          nombre: 'Compatibilidad astral de pareja',
+          meta: ['Sinastría', 'Online · Videollamada'],
+          precio: '$50.000',
+          precioDetalle: 'análisis de dos cartas natales',
+          modalidad: 'Videollamada online',
+          duracion: 'Análisis completo',
+        },
+        {
+          id: 'hol-limpieza',
+          nombre: 'Limpieza energética personalizada',
+          meta: ['Modalidad flexible', 'Online'],
+          precio: '$30.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Online · Modalidad flexible',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-chakras',
+          nombre: 'Alineación de chakras con cristales',
+          meta: ['Energía · Campo áurico', 'Online'],
+          precio: '$32.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-pranica',
+          nombre: 'Sanación pránica',
+          meta: ['Limpieza + protección', 'Online'],
+          precio: '$38.000',
+          precioDetalle: 'por sesión',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+        {
+          id: 'hol-bach',
+          nombre: 'Flores de Bach',
+          meta: ['Terapia emocional', 'Online · Incluye receta'],
+          precio: '$28.000',
+          precioDetalle: 'incluye frasco personalizado',
+          modalidad: 'Videollamada online',
+          duracion: 'Sesión individual',
+        },
+      ]
+    },
+    programas: {
+      nombre: 'Programas y asesorías',
+      paso2Titulo: 'Elige el plan',
+      opciones: [
+        {
+          id: 'prog-3',
+          nombre: 'Plan 3 sesiones',
+          meta: ['3 sesiones', 'Online · Videollamada'],
+          precio: '$65.000',
+          precioDetalle: 'pago único · $21.700 / sesión',
+          modalidad: 'Videollamada online',
+          duracion: '3 sesiones',
+        },
+        {
+          id: 'prog-5',
+          nombre: 'Plan 5 sesiones',
+          meta: ['5 sesiones', 'Online · Videollamada'],
+          precio: '$100.000',
+          precioDetalle: 'pago único · $20.000 / sesión',
+          modalidad: 'Videollamada online',
+          duracion: '5 sesiones',
+        },
+        {
+          id: 'prog-7',
+          nombre: 'Plan 7 sesiones',
+          meta: ['7 sesiones', 'Online · Videollamada'],
+          precio: '$130.000',
+          precioDetalle: 'pago único · $18.600 / sesión',
+          modalidad: 'Videollamada online',
+          duracion: '7 sesiones',
+        },
+        {
+          id: 'prog-videos',
+          nombre: 'Videos grabados',
+          meta: ['40 min c/u', 'Acceso a tu ritmo'],
+          precio: '$45.000',
+          precioDetalle: 'acceso completo al programa',
+          modalidad: 'Videos grabados',
+          duracion: '40 min por video',
+        },
+      ]
+    }
+  };
+
+  // ── ESTADO ──
+  let estado = {
+    paso: 1,
+    categoriaId: null,
+    opcionId: null,
+    pagoMetodo: null,
+  };
+
+  // ── NAVEGACIÓN ENTRE PASOS ──
+  function irAPaso(num) {
+    document.getElementById(`bloque-${estado.paso}`).classList.remove('visible');
+    document.getElementById(`paso-${estado.paso}`).classList.remove('activo');
+    document.getElementById(`paso-${estado.paso}`).classList.add('completado');
+
+    estado.paso = num;
+
+    document.getElementById(`bloque-${num}`).classList.add('visible');
+    document.getElementById(`paso-${num}`).classList.add('activo');
+    document.getElementById(`paso-${num}`).classList.remove('completado');
+
+    if (num === 2) renderOpciones();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── SELECCIONAR CATEGORÍA ──
+  function seleccionarCategoria(el, id) {
+    document.querySelectorAll('.categoria-card').forEach(c => c.classList.remove('seleccionada'));
+    el.classList.add('seleccionada');
+    estado.categoriaId = id;
+    estado.opcionId = null;
+    document.getElementById('btn-siguiente-1').disabled = false;
+
+    // Actualizar resumen
+    document.getElementById('resumen-vacio').style.display = 'none';
+    document.getElementById('resumen-items').style.display = 'flex';
+    document.getElementById('resumen-categoria-fila').style.display = 'flex';
+    document.getElementById('resumen-categoria-val').textContent = servicios[id].nombre;
+    document.getElementById('resumen-opcion-fila').style.display = 'none';
+    document.getElementById('resumen-duracion-fila').style.display = 'none';
+    document.getElementById('resumen-modalidad-fila').style.display = 'none';
+    document.getElementById('resumen-precio-total').classList.remove('visible');
+  }
+
+  // ── RENDERIZAR OPCIONES ──
+  function renderOpciones() {
+    const svc = servicios[estado.categoriaId];
+    document.getElementById('paso2-titulo').textContent = svc.paso2Titulo;
+    const lista = document.getElementById('opciones-lista');
+    lista.innerHTML = '';
+    document.getElementById('btn-siguiente-2').disabled = true;
+
+    svc.opciones.forEach(op => {
+      const card = document.createElement('div');
+      card.className = 'opcion-card';
+      card.dataset.id = op.id;
+      card.innerHTML = `
+        <div class="opcion-header">
+          <div class="opcion-info">
+            <div class="opcion-nombre">${op.nombre}</div>
+            <div class="opcion-meta">
+              <span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6 3.5V6l1.5 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                ${op.meta[0]}
+              </span>
+              <span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M8 1v2M1 5h10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                ${op.meta[1]}
+              </span>
+            </div>
+          </div>
+          <button class="opcion-precio-btn" onclick="togglePrecio(event, this.closest('.opcion-card'))">
+            Ver precio
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 5.25L7 8.75L10.5 5.25" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="opcion-precio-panel">
+          <div class="precio-inner">
+            <div class="precio-monto"><sup>$</sup>${op.precio.replace('$','')}</div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.75rem;">
+              <div class="precio-detalle">${op.precioDetalle}</div>
+              <button class="opcion-seleccionar-btn" onclick="seleccionarOpcion(event, '${op.id}')">Elegir esta opción</button>
+            </div>
+          </div>
+        </div>
+      `;
+      lista.appendChild(card);
+    });
+  }
+
+  function togglePrecio(e, card) {
+    e.stopPropagation();
+    const estaVisible = card.classList.contains('precio-visible');
+    // Cerrar todos
+    document.querySelectorAll('.opcion-card').forEach(c => c.classList.remove('precio-visible'));
+    if (!estaVisible) card.classList.add('precio-visible');
+  }
+
+  function seleccionarOpcion(e, id) {
+    e.stopPropagation();
+    const svc = servicios[estado.categoriaId];
+    const op = svc.opciones.find(o => o.id === id);
+    estado.opcionId = id;
+
+    // Marcar visualmente
+    document.querySelectorAll('.opcion-seleccionar-btn').forEach(b => {
+      b.textContent = 'Elegir esta opción';
+      b.classList.remove('elegida');
+    });
+    e.target.textContent = '✓ Elegida';
+    e.target.classList.add('elegida');
+
+    document.getElementById('btn-siguiente-2').disabled = false;
+
+    // Actualizar resumen
+    document.getElementById('resumen-opcion-fila').style.display = 'flex';
+    document.getElementById('resumen-opcion-val').textContent = op.nombre;
+    document.getElementById('resumen-duracion-fila').style.display = 'flex';
+    document.getElementById('resumen-duracion-val').textContent = op.duracion;
+    document.getElementById('resumen-modalidad-fila').style.display = 'flex';
+    document.getElementById('resumen-modalidad-val').textContent = op.modalidad;
+    document.getElementById('resumen-precio-total').classList.add('visible');
+    document.getElementById('resumen-precio-monto').textContent = op.precio;
+    // Descuento primera sesión (si aplica a sesiones individuales — no a programas)
+    const esPrograma = estado.categoriaId === 'programas';
+    document.getElementById('resumen-descuento').classList.toggle('visible', !esPrograma);
+  }
+
+  // ── SELECCIONAR PAGO ──
+  function seleccionarPago(el, metodo) {
+    document.querySelectorAll('.pago-card').forEach(c => c.classList.remove('seleccionada'));
+    el.classList.add('seleccionada');
+    estado.pagoMetodo = metodo;
+
+    document.getElementById('accion-webpay').classList.remove('visible');
+    document.getElementById('accion-whatsapp').classList.remove('visible');
+
+    if (metodo === 'webpay') {
+      document.getElementById('accion-webpay').classList.add('visible');
+      // Si quieres pasar el precio al link de Webpay, puedes hacerlo aquí
+    } else {
+      // Construir mensaje de WhatsApp con el resumen
+      const svc = servicios[estado.categoriaId];
+      const op = svc.opciones.find(o => o.id === estado.opcionId);
+      const msg = `Hola Demian, quiero agendar una sesión:%0A- Servicio: ${encodeURIComponent(svc.nombre)}%0A- Opción: ${encodeURIComponent(op.nombre)}%0A- Total: ${encodeURIComponent(op.precio)}`;
+      document.getElementById('btn-wa-agenda').href = `https://wa.me/56955377565?text=${msg}`;
+      document.getElementById('accion-whatsapp').classList.add('visible');
+    }
+  }
+
+  // ── MENÚ HAMBURGUESA ──
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>
